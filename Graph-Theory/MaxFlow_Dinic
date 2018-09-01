@@ -1,0 +1,81 @@
+// Dinic algorithm for maxflow. Overall Complexity: O(n^2 m)
+// Functions: Dinic::init() Dinic::addedge(from, to, capacity) Dinic::maxflow(source, target)
+// Use Dinic::solve() to test the algorithm. (Accepted on luogu OJ)
+#include<bits/stdc++.h>
+#define INF 0x3f3f3f3f
+using namespace std;
+namespace adjlist{
+    const int maxn = 103030, maxm = 303200;
+    int head[maxn], nxt[maxm], ecnt = 1;
+    struct Edge{
+        int from, to, cap, flow;
+        Edge(int a = 0, int b = 0, int c = 0, int d = 0): from(a), to(b), cap(c), flow(d){}
+    } e[maxm];
+    inline void addedge(int x, int y, int w){
+        e[++ecnt] = Edge(x, y, w, 0), nxt[ecnt] = head[x], head[x] = ecnt;
+        e[++ecnt] = Edge(y, x, 0, 0), nxt[ecnt] = head[x], head[x] = ecnt;
+    }
+    inline void init(){
+        memset(head, 0, sizeof head);
+        ecnt = 0;
+    }
+}
+namespace Dinic{
+    using namespace adjlist;
+    int n, m, s, t, d[maxn], cur[maxn];
+    bool vis[maxn];
+    bool BFS(){
+        memset(vis, 0, sizeof vis);
+        queue<int> q;
+        q.push(s), d[s] = 0, vis[s] = 1;
+        while(!q.empty()){
+            int x = q.front(); q.pop();
+            for(int i = head[x]; i ; i = nxt[i]){
+                if(!vis[e[i].to ] && e[i].cap > e[i].flow){
+                    vis[e[i].to ] = 1;
+                    d[e[i].to] = d[x] + 1;
+                    q.push(e[i].to );
+                }
+            }
+        }
+        return vis[t];
+    }
+    int DFS(int x, int a){
+        if(x == t || a == 0) return a;
+        int flow = 0, f;
+        for(int i = cur[x]; i ; i = nxt[i], cur[x] = i){
+            if(d[x] + 1 == d[e[i].to] && (f = DFS(e[i].to, min(a, e[i].cap-e[i].flow))) > 0){
+                e[i].flow += f;
+                e[i ^ 1].flow -= f;
+                flow += f, a -= f;
+                if(a == 0) break;
+            }
+        }
+        return flow;
+    }
+    inline int maxflow(int so, int ta){
+        s = so, t = ta;
+        int flow = 0;
+        while(BFS()){
+            memcpy(cur, head, sizeof cur);
+            flow += DFS(s, INF);
+        }
+        return flow;
+    }
+    inline void solve(){
+        int ss, tt;
+        scanf("%d%d%d%d", &n, &m, &ss, &tt);
+        init();
+        for(int i = 1;i <= m; ++i){
+            int x, y, cap;
+            scanf("%d%d%d", &x, &y, &cap);
+            addedge(x, y, cap);
+        }
+        printf("%d\n", maxflow(ss, tt));
+    }
+}
+signed main(){
+
+    freopen("in.txt", "r", stdin);
+    Dinic::solve();
+}
