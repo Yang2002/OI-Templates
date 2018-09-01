@@ -1,0 +1,81 @@
+// EK algorithm for MincostMaxflow. Overall Complexity: O(nm^2)
+// Functions: MCMF::init(n, m) MCMF::addedge(from, to, capacity, cost)
+// Main Function: MCMF::MinCostMaxFlow(source, target, cost&) returns flow while editing the cost.
+// Use long long whenever possible.
+// Use MCMF::solve() to test the algorithm. (got Accepted on luogu OJ)
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+const int maxn = 5020, maxm = 100200;
+namespace adjlist{
+    int head[maxn], nxt[maxm], n, m, ecnt = 1;
+    struct Edge{
+        int from, to, cap, flow, cost;
+        Edge(int u = 0, int v = 0, int c = 0, int f = 0, int o = 0):
+            from(u), to(v), cap(c), flow(f), cost(o){}
+    }e[maxm];
+    inline void init(int nc, int mc){
+        memset(head, 0, sizeof head);
+        ecnt = 1, n = nc, m = mc;
+    }
+    inline void addedge(int u, int v, int ca, int co){
+        e[++ecnt] = Edge(u, v, ca, 0, co), nxt[ecnt] = head[u], head[u] = ecnt;
+        e[++ecnt] = Edge(v, u, 0, 0, -co), nxt[ecnt] = head[v], head[v] = ecnt;
+    }
+}
+
+namespace MCMF{
+    using namespace adjlist;
+    int d[maxn], p[maxn], a[maxn], inq[maxn];
+    inline bool SPFA(int s, int t, int& flow, long long& cost){
+        memset(d, 0x3f, sizeof d);
+        memset(inq, 0, sizeof inq);
+        d[s] = 0, inq[s] = 1, p[s] = 0, a[s] = 0x3f3f3f3f;
+
+        queue<int> q;
+        q.push(s);
+        while(!q.empty()){
+            int u = q.front(); q.pop();
+            inq[u] = 0;
+            for(int i = head[u]; i ; i = nxt[i]){
+                if(e[i].cap > e[i].flow && d[e[i].to] > d[u] + e[i].cost){
+                    d[e[i].to] = d[u] + e[i].cost ;
+                    p[e[i].to] = i;
+                    a[e[i].to] = min(a[u], e[i].cap - e[i].flow);
+                    if(!inq[e[i].to]){
+                        q.push(e[i].to);
+                        inq[e[i].to] = 1;
+                    }
+                }
+            }
+        }
+        if(d[t] >= 0x3f3f3f3f) return false;
+        flow += a[t];
+        cost += 1LL * d[t] * a[t];
+        for(int u = t; u != s; u = e[p[u]].from){
+            e[p[u]].flow += a[t];
+            e[p[u] ^1].flow -= a[t];
+        }
+        return true;
+    }
+    inline int MinCostMaxFlow(int s, int t, ll& cost){
+        int flow = 0; cost = 0;
+        while(SPFA(s, t, flow, cost)) continue;
+        return flow;
+    }
+    inline void solve(){
+        int s, t, mxf; ll  mnc;
+        scanf("%d%d%d%d", &n, &m, &s, &t);
+        for(int i = 1; i <= m; ++i){
+            int u, v, w, c;
+            scanf("%d%d%d%d", &u, &v, &w, &c);
+            addedge(u, v, w, c);
+        }
+        mxf = MinCostMaxFlow(s, t, mnc);
+        printf("%d %lld\n", mxf, mnc);
+    }
+}
+
+int main(){
+    MCMF::solve();
+}
