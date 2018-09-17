@@ -1,0 +1,29 @@
+// Floyd Algorithm to judge circle
+// Suppose two children are running from the same starting point, and have different speeds
+// The faster child can meet the slower one if and only if there is a circle existing in the path
+// This is a typical example. UVa 11549
+#include<bits/stdc++.h>
+#define rep(i, n) for(int i = 1; i <= n; ++i)
+using namespace std;
+typedef long long ll;
+int n, k, pown;
+const int pow10[] = {1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000};
+inline int nxt(int x) {
+    ll ret = 1LL * x * x;
+    while(ret >= pown) ret /= 10;
+    return ret;
+}
+int main(){
+    int T; cin >> T;
+    while(T--){
+        cin >> n >> k; pown = pow10[n];
+        int ans = k, c1 = k, c2 = k;
+        do{
+            c1 = nxt(c1), ans = max(ans, c1);
+            c2 = nxt(c2), ans = max(ans, c2);
+            c2 = nxt(c2), ans = max(ans, c2);
+        } while(c1 != c2);
+        printf("%d\n", ans);
+    }
+    return 0;
+}
