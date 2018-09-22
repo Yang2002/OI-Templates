@@ -1,0 +1,30 @@
+// A template for generating a weighed tree
+// Edit the constant MaxSize and MaxWeight when needed
+const int MaxSize = 10;
+const int MaxWeight = 30; // weight: 0 ~ 29
+// The program will output the tree in the file "in.txt"
+// The format is as follows:
+// First line: sz -- The number of nodes in the tree
+// 2 ~ n line: (from, to, weight) of each edge
+const bool Weighted = true;
+// Change the Weighted constant into false if you don't need weight
+
+#include<bits/stdc++.h>
+#define rep(i, n) for(int i = 1; i <= n; ++i)
+using namespace std;
+typedef long long ll;
+int fa[MaxSize + 10], n, a[MaxSize + 10];
+mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
+int main(){
+    n = rng() % MaxSize + 1;
+    rep(i, n) a[i] = i;
+    printf("%d\n", n);
+    shuffle(a + 1, a + 1 + n, rng);
+    for(int i = n ; i > 1; --i){
+        fa[i] = rng() % (i - 1) + 1, printf("%d %d", a[fa[i]], a[i]);
+        int w = rng() % MaxWeight;
+        if(Weighted) printf(" %d", w);
+        putchar('\n');
+    }
+    return 0;
+}
