@@ -1,0 +1,35 @@
+// Z algorithm: calculates LCP(s[0...n] , s[i...n]) in the array zed[] (for i in [1, n])
+// Complexity: O(n)
+
+#include<bits/stdc++.h>
+#define rep(i, n) for(int i = 1; i <= n; ++i)
+using namespace std;
+typedef long long ll;
+string s;
+const int maxn = 1002000;
+int zz[maxn], len;
+inline void get_z(string s, int* z){
+    int len = s.length(), l = 0, r = 0;
+    for(int i = 1; i < len; ++i){
+        if(i > r){
+            l = r = i;
+            while(r < len && s[r] == s[r - l]) r++;
+            z[i] = r - l, r--;
+        } else{
+            if(z[i - l] < r - i + 1) z[i] = z[i - l];
+            else {
+                l = i;
+                while(r < len && s[r] == s[r-l]) r++;
+                z[i] = r - l, r--;
+            }
+        }
+    }
+}
+int main(){
+    cin >> s;
+    get_z(s, zz);
+    len = s.length();
+    for(register int i = 1; i < len; ++i)
+        printf("z[%d] = %d\n", i, zz[i]);
+    return 0;
+}
