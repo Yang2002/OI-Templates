@@ -78,7 +78,7 @@ namespace Treap {
                 p->cnt--;
                 p->Update();
             } else if(p->lc != Null || p->rc != Null) {
-                if(p->rc == 0 || p->lc->dat > p->rc->dat) {
+                if(p->rc == Null || p->lc->dat > p->rc->dat) {
                     rrot(p);
                     Remove(v, p->rc);
                 } else lrot(p), Remove(v, p->lc);
