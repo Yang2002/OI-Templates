@@ -1,10 +1,9 @@
-// Based on luogu 3803
 #include<bits/stdc++.h>
 #define rep(i, n) for(int i = 1; i <= n; ++i)
 using namespace std;
 typedef long long ll;
 
-const int FFT_MAXN = 4002000; // Pay attention!!
+const int FFT_MAXN = 4002000; // multiply by 4!!
 const double Pi = 3.1415926535897932384626;
 struct comp {
     double re, im;
@@ -38,19 +37,19 @@ void fft_init(int degA, int degB) {
         r[i] = ( r[i >> 1] >> 1 ) | ( (i & 1) << (l - 1) );
 }
 
-void fft_pmul(comp *A, comp *B) { // A will be modified to get answer
-    fft(a, 1);
-    fft(b, 1);
-    for(int i = 0; i < lim; ++i) a[i] = a[i] * b[i];
-    fft(a, -1);
+void fft_pmul(comp *A, int degA, comp *B, int degB) { // A will be modified to get answer
+    fft_init(degA, degB);
+    fft(A, 1);
+    fft(B, 1);
+    for(int i = 0; i < lim; ++i) A[i] = A[i] * B[i];
+    fft(A, -1);
 }
 
 int main() {
     scanf("%d%d", &n, &m);
     for(int i = 0; i <= n; ++i) scanf("%lf", &a[i].re);
     for(int i = 0; i <= m; ++i) scanf("%lf", &b[i].re);
-    fft_init(n, m);
-    fft_pmul(a, b);
+    fft_pmul(a, n, b, m);
     for(int i = 0; i <= n + m; ++i)
         printf("%d%c", int(a[i].re + 0.5), " \n"[i == n+m]);
     
