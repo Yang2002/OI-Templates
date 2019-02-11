@@ -1,0 +1,30 @@
+const int HASHSIZE = 76543, KEYSIZE = 100200;
+struct HashMap {;
+    pair<int, int> *End, kv[KEYSIZE];
+    int head[HASHSIZE], nxt[HASHSIZE], tot;
+
+    HashMap() { clear(); End = new pair<int,int>; }
+    pii* end() { return End; }
+    void clear() { 
+        memset(head, -1, sizeof head); 
+        memset(nxt, -1, sizeof nxt);
+        tot = 0;
+    }
+    void insert(int x, int y) {
+        kv[++tot] = make_pair(x, y);
+        int xm = x % HASHSIZE, id = tot;
+        nxt[id] = head[xm];
+        head[xm] = id;
+    }
+    pii* find(int x) {
+        int xm = x % HASHSIZE;
+        for(int p = head[xm]; ~p; p = nxt[p]) {
+            if(kv[p].first == x) return kv + p;
+        }
+        return End;
+    }
+    int& operator [] (const int& idx) {
+        if(find(idx) == End) insert(idx, 0);
+        return find(idx)->second;
+    }
+} mp;
